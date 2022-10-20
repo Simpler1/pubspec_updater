@@ -1,7 +1,6 @@
 name: pubspec_updater
 description: Creates a tool to update pubspec.yaml versions.
 version: 0.0.1
-author: Steve Gehrman
 homepage: stellarkit.io
 
 environment:
@@ -12,9 +11,9 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
+  args: ^2.3.1
   http: ^0.13.5
   yaml: ^3.1.1
-  args: ^2.3.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

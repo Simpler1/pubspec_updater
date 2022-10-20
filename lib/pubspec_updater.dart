@@ -3,9 +3,10 @@ library pubspec_updater;
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
+import 'package:args/args.dart';
 import 'package:http/http.dart';
 import 'package:yaml/yaml.dart';
-import 'package:args/args.dart';
 
 Future main(List<String> args) async {
   runUpdater(args);
@@ -14,25 +15,12 @@ Future main(List<String> args) async {
 Updater runUpdater(args) {
   final parser = ArgParser();
 
-  parser.addFlag('help',
-      abbr: 'h', defaultsTo: false, negatable: false, help: 'Show help');
-  parser.addFlag('version',
-      abbr: 'v', defaultsTo: false, negatable: false, help: 'Show version');
-  parser.addFlag('carets',
-      abbr: 'c',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Adds ^ in front of all versions.');
+  parser.addFlag('help', abbr: 'h', defaultsTo: false, negatable: false, help: 'Show help');
+  parser.addFlag('version', abbr: 'v', defaultsTo: false, negatable: false, help: 'Show version');
+  parser.addFlag('carets', abbr: 'c', defaultsTo: false, negatable: false, help: 'Adds ^ in front of all versions.');
   parser.addFlag('nocarets',
-      abbr: 'n',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Removes all ^ in front of all versions.');
-  parser.addFlag('update',
-      abbr: 'u',
-      defaultsTo: false,
-      negatable: false,
-      help: 'Write results to pubspec.yaml');
+      abbr: 'n', defaultsTo: false, negatable: false, help: 'Removes all ^ in front of all versions.');
+  parser.addFlag('update', abbr: 'u', defaultsTo: false, negatable: false, help: 'Write results to pubspec.yaml');
   parser.addFlag('removeRanges',
       abbr: 'r',
       defaultsTo: false,
@@ -90,14 +78,11 @@ class Updater {
   Future runUpdate() async {
     final File file = File('./pubspec.yaml');
 
-    final List<Dependency> dependencies =
-        await getDependencies(file, 'dependencies');
+    final List<Dependency> dependencies = await getDependencies(file, 'dependencies');
 
-    final List<Dependency> devDependencies =
-        await getDependencies(file, 'dev_dependencies');
+    final List<Dependency> devDependencies = await getDependencies(file, 'dev_dependencies');
 
-    final List<Dependency> overrideDependencies =
-        await getDependencies(file, 'dependency_overrides');
+    final List<Dependency> overrideDependencies = await getDependencies(file, 'dependency_overrides');
 
     dependencies.addAll(devDependencies);
     dependencies.addAll(overrideDependencies);
@@ -128,9 +113,9 @@ class Updater {
           final String value = entry.value is String ? entry.value : '';
 
           // avoid > <
-          if (removeRanges ||
-              (!value.startsWith('>') && !value.startsWith('<')))
+          if (removeRanges || (!value.startsWith('>') && !value.startsWith('<'))) {
             list.add(Dependency(name, value));
+          }
         }
       }
     }
@@ -213,13 +198,11 @@ class Updater {
         if (search != null) {
           // space added to catch the case of image: and xx_image:
           // see searchString above
-          final String replace =
-              ' ${dependency.name}: ${dependency.newVersion}';
+          final String replace = ' ${dependency.name}: ${dependency.newVersion}';
 
           yaml = yaml.replaceFirst(search, replace);
         } else {
-          stdout.writeln(
-              'Could not find ${dependency.name} in pubspec.yaml.  Not replaced.');
+          stdout.writeln('Could not find ${dependency.name} in pubspec.yaml.  Not replaced.');
         }
       }
     }
