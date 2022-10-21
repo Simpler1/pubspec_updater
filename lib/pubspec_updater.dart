@@ -63,9 +63,16 @@ class Updater {
 
   void writeUpdateInfo(List<Dependency> dependencies) {
     if (dependencies.isNotEmpty) {
+      int maxLength = 0;
+      dependencies.forEach((d) {
+        if (d.hasNewVersion) {
+          final int current = d.name.length + d.currentVersion.length + 2;
+          maxLength = max(maxLength, current);
+        }
+      });
       for (int x = 0; x < dependencies.length; x++) {
         if (dependencies[x].hasNewVersion) {
-          stdout.writeln(dependencies[x].toString());
+          stdout.writeln(dependencies[x].toFormattedString(maxLength));
         }
       }
     } else {
@@ -231,13 +238,12 @@ class Dependency {
     newVersion = version;
   }
 
-  @override
-  String toString() {
+  String toFormattedString(int maxLength) {
     final String left = '$name: $currentVersion';
     final String right = '$name: $newVersion';
 
-    final String padding = ' ' * max(2, 20 - left.length);
+    final String padding = ' ' * max(0, maxLength - left.length);
 
-    return '$left$padding->     $right';
+    return '$left$padding    ->    $right';
   }
 }
